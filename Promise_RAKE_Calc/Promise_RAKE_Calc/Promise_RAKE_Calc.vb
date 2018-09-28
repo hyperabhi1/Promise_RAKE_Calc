@@ -127,7 +127,8 @@ Module Promise_RAKE_Calc
             cmd.CommandText = "SELECT * FROM HEADLETTERS_ENGINE.DBO.HPLANET WHERE PLHUSERID = '" + UID + "' AND PLHID = '" + HID + "';"
             reader = cmd.ExecuteReader()
             While reader.Read()
-                Dim hPlanet = New HPLANET With {
+                If reader("PLANET").ToString().Trim <> "NE" And reader("PLANET").ToString().Trim <> "UR" And reader("PLANET").ToString().Trim <> "PL" Then
+                    Dim hPlanet = New HPLANET With {
                     .PLHUSERID = reader("PLHUSERID").ToString().Trim,
                     .PLHID = reader("PLHID").ToString().Trim,
                     .PLANET = reader("PLANET").ToString().Trim,
@@ -141,7 +142,8 @@ Module Promise_RAKE_Calc
                     .HP6 = reader("HP6").ToString().Trim,
                     .HPHOUSE = reader("HPHOUSE").ToString().Trim
                 }
-                HPLANETList.Add(hPlanet)
+                    HPLANETList.Add(hPlanet)
+                End If
             End While
         Catch ex As Exception
             Console.WriteLine("Error Occured : " + ex.Message)
@@ -153,313 +155,97 @@ Module Promise_RAKE_Calc
         Dim HcuspListCount = HCUSPList.Count - 1
         For i As Integer = 0 To HcuspListCount
             If HCUSPList.Item(i).CP1 = "RA" Then
-                Dim CUSPUSERID = HCUSPList.Item(i).CUSPUSERID
-                Dim CUSPHID = HCUSPList.Item(i).CUSPHID
-                Dim CUSP = HCUSPList.Item(i).CUSP
-                Dim SIGN = HCUSPList.Item(i).SIGN
-                Dim DMS = HCUSPList.Item(i).DMS
-                Dim CP1 = HCUSPList.Item(i).CP1
-                Dim CP2 = HCUSPList.Item(i).CP2
-                Dim CP3 = HCUSPList.Item(i).CP3
+                Dim CP1Expand = "RA"
                 Dim S1SplitRA = SplitInTwoChar(HRAKEList.Item(0).S1.ToString().Trim)
                 For j As Integer = 0 To S1SplitRA.Length - 1
                     If S1SplitRA(j) = "KE" Then
-                        Dim hCuspKE = New HCUSP With {
-                            .CUSPUSERID = CUSPUSERID,
-                            .CUSPHID = CUSPHID,
-                            .CUSP = CUSP,
-                            .SIGN = SIGN,
-                            .DMS = DMS,
-                            .CP1 = "KE",
-                            .CP2 = CP2,
-                            .CP3 = CP3
-                        }
-                        HCUSPList.Add(hCuspKE)
+                        CP1Expand = CP1Expand + "KE"
                         Dim S1SplitKE = SplitInTwoChar(HRAKEList.Item(1).S1.ToString().Trim)
                         For k As Integer = 0 To S1SplitKE.Length - 1
-                            Dim hCusp = New HCUSP With {
-                                .CUSPUSERID = CUSPUSERID,
-                                .CUSPHID = CUSPHID,
-                                .CUSP = CUSP,
-                                .SIGN = SIGN,
-                                .DMS = DMS,
-                                .CP1 = S1SplitKE(k).ToUpper(),
-                                .CP2 = CP2,
-                                .CP3 = CP3
-                            }
-                            HCUSPList.Add(hCusp)
+                            CP1Expand = CP1Expand + S1SplitKE(k)
                         Next
                     Else
-                        Dim hCusp = New HCUSP With {
-                            .CUSPUSERID = CUSPUSERID,
-                            .CUSPHID = CUSPHID,
-                            .CUSP = CUSP,
-                            .SIGN = SIGN,
-                            .DMS = DMS,
-                            .CP1 = S1SplitRA(j).ToUpper(),
-                            .CP2 = CP2,
-                            .CP3 = CP3
-                        }
-                        HCUSPList.Add(hCusp)
+                        CP1Expand = CP1Expand + S1SplitRA(j)
                     End If
                 Next
+                HCUSPList.Item(i).CP1 = CP1Expand
             ElseIf HCUSPList.Item(i).CP1 = "KE" Then
-                Dim CUSPUSERID = HCUSPList.Item(i).CUSPUSERID
-                Dim CUSPHID = HCUSPList.Item(i).CUSPHID
-                Dim CUSP = HCUSPList.Item(i).CUSP
-                Dim SIGN = HCUSPList.Item(i).SIGN
-                Dim DMS = HCUSPList.Item(i).DMS
-                Dim CP1 = HCUSPList.Item(i).CP1
-                Dim CP2 = HCUSPList.Item(i).CP2
-                Dim CP3 = HCUSPList.Item(i).CP3
+                Dim CP1Expand = "KE"
                 Dim S1SplitKE = SplitInTwoChar(HRAKEList.Item(1).S1.ToString().Trim)
                 For j As Integer = 0 To S1SplitKE.Length - 1
                     If S1SplitKE(j) = "RA" Then
-                        Dim hCuspKE = New HCUSP With {
-                            .CUSPUSERID = CUSPUSERID,
-                            .CUSPHID = CUSPHID,
-                            .CUSP = CUSP,
-                            .SIGN = SIGN,
-                            .DMS = DMS,
-                            .CP1 = "RA",
-                            .CP2 = CP2,
-                            .CP3 = CP3
-                        }
-                        HCUSPList.Add(hCuspKE)
+                        CP1Expand = CP1Expand + "RA"
                         Dim S1SplitRA = SplitInTwoChar(HRAKEList.Item(0).S1.ToString().Trim)
                         For k As Integer = 0 To S1SplitRA.Length - 1
-                            Dim hCusp = New HCUSP With {
-                                .CUSPUSERID = CUSPUSERID,
-                                .CUSPHID = CUSPHID,
-                                .CUSP = CUSP,
-                                .SIGN = SIGN,
-                                .DMS = DMS,
-                                .CP1 = S1SplitRA(k).ToUpper(),
-                                .CP2 = CP2,
-                                .CP3 = CP3
-                            }
-                            HCUSPList.Add(hCusp)
+                            CP1Expand = CP1Expand + S1SplitRA(k)
                         Next
                     Else
-                        Dim hCusp = New HCUSP With {
-                            .CUSPUSERID = CUSPUSERID,
-                            .CUSPHID = CUSPHID,
-                            .CUSP = CUSP,
-                            .SIGN = SIGN,
-                            .DMS = DMS,
-                            .CP1 = S1SplitKE(j).ToUpper(),
-                            .CP2 = CP2,
-                            .CP3 = CP3
-                        }
-                        HCUSPList.Add(hCusp)
+                        CP1Expand = CP1Expand + S1SplitKE(j)
                     End If
                 Next
+                HCUSPList.Item(i).CP1 = CP1Expand
             End If
             If HCUSPList.Item(i).CP2 = "RA" Then
-                Dim CUSPUSERID = HCUSPList.Item(i).CUSPUSERID
-                Dim CUSPHID = HCUSPList.Item(i).CUSPHID
-                Dim CUSP = HCUSPList.Item(i).CUSP
-                Dim SIGN = HCUSPList.Item(i).SIGN
-                Dim DMS = HCUSPList.Item(i).DMS
-                Dim CP1 = HCUSPList.Item(i).CP1
-                Dim CP2 = HCUSPList.Item(i).CP2
-                Dim CP3 = HCUSPList.Item(i).CP3
+                Dim CP2Expand = "RA"
                 Dim S1SplitRA = SplitInTwoChar(HRAKEList.Item(0).S1.ToString().Trim)
                 For j As Integer = 0 To S1SplitRA.Length - 1
                     If S1SplitRA(j) = "KE" Then
-                        Dim hCuspKE = New HCUSP With {
-                            .CUSPUSERID = CUSPUSERID,
-                            .CUSPHID = CUSPHID,
-                            .CUSP = CUSP,
-                            .SIGN = SIGN,
-                            .DMS = DMS,
-                            .CP1 = CP1,
-                            .CP2 = "KE",
-                            .CP3 = CP3
-                        }
-                        HCUSPList.Add(hCuspKE)
+                        CP2Expand = CP2Expand + "KE"
                         Dim S1SplitKE = SplitInTwoChar(HRAKEList.Item(1).S1.ToString().Trim)
                         For k As Integer = 0 To S1SplitKE.Length - 1
-                            Dim hCusp = New HCUSP With {
-                                .CUSPUSERID = CUSPUSERID,
-                                .CUSPHID = CUSPHID,
-                                .CUSP = CUSP,
-                                .SIGN = SIGN,
-                                .DMS = DMS,
-                                .CP1 = CP1,
-                                .CP2 = S1SplitKE(k).ToUpper(),
-                                .CP3 = CP3
-                            }
-                            HCUSPList.Add(hCusp)
+                            CP2Expand = CP2Expand + S1SplitKE(k)
                         Next
                     Else
-                        Dim hCusp = New HCUSP With {
-                            .CUSPUSERID = CUSPUSERID,
-                            .CUSPHID = CUSPHID,
-                            .CUSP = CUSP,
-                            .SIGN = SIGN,
-                            .DMS = DMS,
-                            .CP1 = CP1,
-                            .CP2 = S1SplitRA(j).ToUpper(),
-                            .CP3 = CP3
-                        }
-                        HCUSPList.Add(hCusp)
+                        CP2Expand = CP2Expand + S1SplitRA(j)
                     End If
                 Next
+                HCUSPList.Item(i).CP2 = CP2Expand
             ElseIf HCUSPList.Item(i).CP2 = "KE" Then
-                Dim CUSPUSERID = HCUSPList.Item(i).CUSPUSERID
-                Dim CUSPHID = HCUSPList.Item(i).CUSPHID
-                Dim CUSP = HCUSPList.Item(i).CUSP
-                Dim SIGN = HCUSPList.Item(i).SIGN
-                Dim DMS = HCUSPList.Item(i).DMS
-                Dim CP1 = HCUSPList.Item(i).CP1
-                Dim CP2 = HCUSPList.Item(i).CP2
-                Dim CP3 = HCUSPList.Item(i).CP3
+                Dim CP2Expand = "KE"
                 Dim S1SplitKE = SplitInTwoChar(HRAKEList.Item(1).S1.ToString().Trim)
                 For j As Integer = 0 To S1SplitKE.Length - 1
                     If S1SplitKE(j) = "RA" Then
-                        Dim hCuspKE = New HCUSP With {
-                            .CUSPUSERID = CUSPUSERID,
-                            .CUSPHID = CUSPHID,
-                            .CUSP = CUSP,
-                            .SIGN = SIGN,
-                            .DMS = DMS,
-                            .CP1 = CP1,
-                            .CP2 = "RA",
-                            .CP3 = CP3
-                        }
-                        HCUSPList.Add(hCuspKE)
+                        CP2Expand = CP2Expand + "RA"
                         Dim S1SplitRA = SplitInTwoChar(HRAKEList.Item(0).S1.ToString().Trim)
                         For k As Integer = 0 To S1SplitRA.Length - 1
-                            Dim hCusp = New HCUSP With {
-                                .CUSPUSERID = CUSPUSERID,
-                                .CUSPHID = CUSPHID,
-                                .CUSP = CUSP,
-                                .SIGN = SIGN,
-                                .DMS = DMS,
-                                .CP1 = CP1,
-                                .CP2 = S1SplitRA(k).ToUpper(),
-                                .CP3 = CP3
-                            }
-                            HCUSPList.Add(hCusp)
+                            CP2Expand = CP2Expand + S1SplitRA(k)
                         Next
                     Else
-                        Dim hCusp = New HCUSP With {
-                            .CUSPUSERID = CUSPUSERID,
-                            .CUSPHID = CUSPHID,
-                            .CUSP = CUSP,
-                            .SIGN = SIGN,
-                            .DMS = DMS,
-                            .CP1 = CP1,
-                            .CP2 = S1SplitKE(j).ToUpper(),
-                            .CP3 = CP3
-                        }
-                        HCUSPList.Add(hCusp)
+                        CP2Expand = CP2Expand + S1SplitKE(j)
                     End If
                 Next
+                HCUSPList.Item(i).CP2 = CP2Expand
             End If
             If HCUSPList.Item(i).CP3 = "RA" Then
-                Dim CUSPUSERID = HCUSPList.Item(i).CUSPUSERID
-                Dim CUSPHID = HCUSPList.Item(i).CUSPHID
-                Dim CUSP = HCUSPList.Item(i).CUSP
-                Dim SIGN = HCUSPList.Item(i).SIGN
-                Dim DMS = HCUSPList.Item(i).DMS
-                Dim CP1 = HCUSPList.Item(i).CP1
-                Dim CP2 = HCUSPList.Item(i).CP2
-                Dim CP3 = HCUSPList.Item(i).CP3
+                Dim CP3Expand = "RA"
                 Dim S1SplitRA = SplitInTwoChar(HRAKEList.Item(0).S1.ToString().Trim)
                 For j As Integer = 0 To S1SplitRA.Length - 1
                     If S1SplitRA(j) = "KE" Then
-                        Dim hCuspKE = New HCUSP With {
-                            .CUSPUSERID = CUSPUSERID,
-                            .CUSPHID = CUSPHID,
-                            .CUSP = CUSP,
-                            .SIGN = SIGN,
-                            .DMS = DMS,
-                            .CP1 = CP1,
-                            .CP2 = CP2,
-                            .CP3 = "KE"
-                        }
-                        HCUSPList.Add(hCuspKE)
+                        CP3Expand = CP3Expand + "KE"
                         Dim S1SplitKE = SplitInTwoChar(HRAKEList.Item(1).S1.ToString().Trim)
                         For k As Integer = 0 To S1SplitKE.Length - 1
-                            Dim hCusp = New HCUSP With {
-                                .CUSPUSERID = CUSPUSERID,
-                                .CUSPHID = CUSPHID,
-                                .CUSP = CUSP,
-                                .SIGN = SIGN,
-                                .DMS = DMS,
-                                .CP1 = CP1,
-                                .CP2 = CP2,
-                                .CP3 = S1SplitKE(k).ToUpper()
-                            }
-                            HCUSPList.Add(hCusp)
+                            CP3Expand = CP3Expand + S1SplitKE(k)
                         Next
                     Else
-                        Dim hCusp = New HCUSP With {
-                            .CUSPUSERID = CUSPUSERID,
-                            .CUSPHID = CUSPHID,
-                            .CUSP = CUSP,
-                            .SIGN = SIGN,
-                            .DMS = DMS,
-                            .CP1 = CP1,
-                            .CP2 = CP2,
-                            .CP3 = S1SplitRA(j).ToUpper()
-                        }
-                        HCUSPList.Add(hCusp)
+                        CP3Expand = CP3Expand + S1SplitRA(j)
                     End If
                 Next
+                HCUSPList.Item(i).CP3 = CP3Expand
             ElseIf HCUSPList.Item(i).CP3 = "KE" Then
-                Dim CUSPUSERID = HCUSPList.Item(i).CUSPUSERID
-                Dim CUSPHID = HCUSPList.Item(i).CUSPHID
-                Dim CUSP = HCUSPList.Item(i).CUSP
-                Dim SIGN = HCUSPList.Item(i).SIGN
-                Dim DMS = HCUSPList.Item(i).DMS
-                Dim CP1 = HCUSPList.Item(i).CP1
-                Dim CP2 = HCUSPList.Item(i).CP2
-                Dim CP3 = HCUSPList.Item(i).CP3
+                Dim CP3Expand = "KE"
                 Dim S1SplitKE = SplitInTwoChar(HRAKEList.Item(1).S1.ToString().Trim)
                 For j As Integer = 0 To S1SplitKE.Length - 1
                     If S1SplitKE(j) = "RA" Then
-                        Dim hCuspKE = New HCUSP With {
-                            .CUSPUSERID = CUSPUSERID,
-                            .CUSPHID = CUSPHID,
-                            .CUSP = CUSP,
-                            .SIGN = SIGN,
-                            .DMS = DMS,
-                            .CP1 = CP1,
-                            .CP2 = CP2,
-                            .CP3 = "RA"
-                        }
-                        HCUSPList.Add(hCuspKE)
+                        CP3Expand = CP3Expand + "RA"
                         Dim S1SplitRA = SplitInTwoChar(HRAKEList.Item(0).S1.ToString().Trim)
                         For k As Integer = 0 To S1SplitRA.Length - 1
-                            Dim hCusp = New HCUSP With {
-                                .CUSPUSERID = CUSPUSERID,
-                                .CUSPHID = CUSPHID,
-                                .CUSP = CUSP,
-                                .SIGN = SIGN,
-                                .DMS = DMS,
-                                .CP1 = CP1,
-                                .CP2 = CP2,
-                                .CP3 = S1SplitRA(k).ToUpper()
-                            }
-                            HCUSPList.Add(hCusp)
+                            CP3Expand = CP3Expand + S1SplitRA(k)
                         Next
                     Else
-                        Dim hCusp = New HCUSP With {
-                            .CUSPUSERID = CUSPUSERID,
-                            .CUSPHID = CUSPHID,
-                            .CUSP = CUSP,
-                            .SIGN = SIGN,
-                            .DMS = DMS,
-                            .CP1 = CP1,
-                            .CP2 = CP2,
-                            .CP3 = S1SplitKE(j).ToUpper()
-                        }
-                        HCUSPList.Add(hCusp)
+                        CP3Expand = CP3Expand + S1SplitKE(j)
                     End If
                 Next
+                HCUSPList.Item(i).CP3 = CP3Expand
             End If
         Next
     End Sub
@@ -467,139 +253,35 @@ Module Promise_RAKE_Calc
         Dim HplanetListCount = HPLANETList.Count - 1
         For i As Integer = 0 To HplanetListCount
             If HPLANETList.Item(i).PLANET = "RA" Then
-                Dim PLHUSERID = HPLANETList.Item(i).PLHUSERID
-                Dim PLHID = HPLANETList.Item(i).PLHID
-                Dim PLANET = HPLANETList.Item(i).PLANET
-                Dim SIGN = HPLANETList.Item(i).SIGN
-                Dim DMS = HPLANETList.Item(i).DMS
-                Dim HP1 = HPLANETList.Item(i).HP1
-                Dim HP2 = HPLANETList.Item(i).HP2
-                Dim HP3 = HPLANETList.Item(i).HP3
-                Dim HP4 = HPLANETList.Item(i).HP4
-                Dim HP5 = HPLANETList.Item(i).HP5
-                Dim HP6 = HPLANETList.Item(i).HP6
-                Dim HPHOUSE = HPLANETList.Item(i).HPHOUSE
+                Dim PlanetExpand = "RA"
                 Dim S1SplitRA = SplitInTwoChar(HRAKEList.Item(0).S1.ToString().Trim)
                 For j As Integer = 0 To S1SplitRA.Length - 1
                     If S1SplitRA(j) = "KE" Then
-                        Dim hPlanetKE = New HPLANET With {
-                            .PLHUSERID = PLHUSERID,
-                            .PLHID = PLHID,
-                            .PLANET = "KE",
-                            .SIGN = SIGN,
-                            .DMS = DMS,
-                            .HP1 = HP1,
-                            .HP2 = HP2,
-                            .HP3 = HP3,
-                            .HP4 = HP4,
-                            .HP5 = HP5,
-                            .HP6 = HP6,
-                            .HPHOUSE = HPHOUSE
-                        }
-                        HPLANETList.Add(hPlanetKE)
+                        PlanetExpand = PlanetExpand + "KE"
                         Dim S1SplitKE = SplitInTwoChar(HRAKEList.Item(1).S1.ToString().Trim)
                         For k As Integer = 0 To S1SplitKE.Length - 1
-                            Dim hPlanet = New HPLANET With {
-                                .PLHUSERID = PLHUSERID,
-                                .PLHID = PLHID,
-                                .PLANET = S1SplitKE(k).ToUpper(),
-                                .SIGN = SIGN,
-                                .DMS = DMS,
-                                .HP1 = HP1,
-                                .HP2 = HP2,
-                                .HP3 = HP3,
-                                .HP4 = HP4,
-                                .HP5 = HP5,
-                                .HP6 = HP6,
-                                .HPHOUSE = HPHOUSE
-                            }
-                            HPLANETList.Add(hPlanet)
+                            PlanetExpand = PlanetExpand + S1SplitKE(k)
                         Next
                     Else
-                        Dim hPlanet = New HPLANET With {
-                            .PLHUSERID = PLHUSERID,
-                            .PLHID = PLHID,
-                            .PLANET = S1SplitRA(j).ToUpper(),
-                            .SIGN = SIGN,
-                            .DMS = DMS,
-                            .HP1 = HP1,
-                            .HP2 = HP2,
-                            .HP3 = HP3,
-                            .HP4 = HP4,
-                            .HP5 = HP5,
-                            .HP6 = HP6,
-                            .HPHOUSE = HPHOUSE
-                        }
-                        HPLANETList.Add(hPlanet)
+                        PlanetExpand = PlanetExpand + S1SplitRA(j)
                     End If
                 Next
+                HPLANETList.Item(i).PLANET = PlanetExpand
             ElseIf HPLANETList.Item(i).PLANET = "KE" Then
-                Dim PLHUSERID = HPLANETList.Item(i).PLHUSERID
-                Dim PLHID = HPLANETList.Item(i).PLHID
-                Dim PLANET = HPLANETList.Item(i).PLANET
-                Dim SIGN = HPLANETList.Item(i).SIGN
-                Dim DMS = HPLANETList.Item(i).DMS
-                Dim HP1 = HPLANETList.Item(i).HP1
-                Dim HP2 = HPLANETList.Item(i).HP2
-                Dim HP3 = HPLANETList.Item(i).HP3
-                Dim HP4 = HPLANETList.Item(i).HP4
-                Dim HP5 = HPLANETList.Item(i).HP5
-                Dim HP6 = HPLANETList.Item(i).HP6
-                Dim HPHOUSE = HPLANETList.Item(i).HPHOUSE
+                Dim PlanetExpand = "KE"
                 Dim S1SplitKE = SplitInTwoChar(HRAKEList.Item(1).S1.ToString().Trim)
                 For j As Integer = 0 To S1SplitKE.Length - 1
                     If S1SplitKE(j) = "RA" Then
-                        Dim hPlanetKE = New HPLANET With {
-                            .PLHUSERID = PLHUSERID,
-                            .PLHID = PLHID,
-                            .PLANET = "RA",
-                            .SIGN = SIGN,
-                            .DMS = DMS,
-                            .HP1 = HP1,
-                            .HP2 = HP2,
-                            .HP3 = HP3,
-                            .HP4 = HP4,
-                            .HP5 = HP5,
-                            .HP6 = HP6,
-                            .HPHOUSE = HPHOUSE
-                        }
-                        HPLANETList.Add(hPlanetKE)
+                        PlanetExpand = PlanetExpand + "RA"
                         Dim S1SplitRA = SplitInTwoChar(HRAKEList.Item(0).S1.ToString().Trim)
                         For k As Integer = 0 To S1SplitRA.Length - 1
-                            Dim hPlanet = New HPLANET With {
-                                .PLHUSERID = PLHUSERID,
-                                .PLHID = PLHID,
-                                .PLANET = S1SplitRA(k).ToUpper(),
-                                .SIGN = SIGN,
-                                .DMS = DMS,
-                                .HP1 = HP1,
-                                .HP2 = HP2,
-                                .HP3 = HP3,
-                                .HP4 = HP4,
-                                .HP5 = HP5,
-                                .HP6 = HP6,
-                                .HPHOUSE = HPHOUSE
-                            }
-                            HPLANETList.Add(hPlanet)
+                            PlanetExpand = PlanetExpand + S1SplitRA(k)
                         Next
                     Else
-                        Dim hPlanet = New HPLANET With {
-                            .PLHUSERID = PLHUSERID,
-                            .PLHID = PLHID,
-                            .PLANET = S1SplitKE(j).ToUpper(),
-                            .SIGN = SIGN,
-                            .DMS = DMS,
-                            .HP1 = HP1,
-                            .HP2 = HP2,
-                            .HP3 = HP3,
-                            .HP4 = HP4,
-                            .HP5 = HP5,
-                            .HP6 = HP6,
-                            .HPHOUSE = HPHOUSE
-                        }
-                        HPLANETList.Add(hPlanet)
+                        PlanetExpand = PlanetExpand + S1SplitKE(j)
                     End If
                 Next
+                HPLANETList.Item(i).PLANET = PlanetExpand
             End If
         Next
     End Sub
@@ -611,9 +293,34 @@ Module Promise_RAKE_Calc
         con.ConnectionString = connstr
         If HCUSPList.Count <> 0 Then
             For i As Integer = 0 To HCUSPList.Count - 1
-                HCUSPQuery = HCUSPQuery + $"INSERT INTO HEADLETTERS_ENGINE.DBO.HCUSP_CALC VALUES ('" + HCUSPList.Item(i).CUSPUSERID + "','" + HCUSPList.Item(i).CUSPHID + "','" + HCUSPList.Item(i).CUSP + "','" + HCUSPList.Item(i).CP1 + "','1','" + 1.ToString() + "');
-                            INSERT INTO HEADLETTERS_ENGINE.DBO.HCUSP_CALC VALUES ('" + HCUSPList.Item(i).CUSPUSERID + "','" + HCUSPList.Item(i).CUSPHID + "','" + HCUSPList.Item(i).CUSP + "','" + HCUSPList.Item(i).CP2 + "','2','" + 1.ToString() + "');
-                            INSERT INTO HEADLETTERS_ENGINE.DBO.HCUSP_CALC VALUES ('" + HCUSPList.Item(i).CUSPUSERID + "','" + HCUSPList.Item(i).CUSPHID + "','" + HCUSPList.Item(i).CUSP + "','" + HCUSPList.Item(i).CP3 + "','3','" + 1.ToString() + "');" + vbCrLf + ""
+                Dim HCUSPQueryCP1 = ""
+                Dim HCUSPQueryCP2 = ""
+                Dim HCUSPQueryCP3 = ""
+                If HCUSPList.Item(i).CP1.Length > 2 Then
+                    Dim HCUSPCP1 = SplitInTwoChar(HCUSPList.Item(i).CP1)
+                    For j As Integer = 0 To HCUSPCP1.Count - 1
+                        HCUSPQueryCP1 = HCUSPQueryCP1 + "INSERT INTO HEADLETTERS_ENGINE.DBO.HCUSP_CALC VALUES ('" + HCUSPList.Item(i).CUSPUSERID + "','" + HCUSPList.Item(i).CUSPHID + "','" + HCUSPList.Item(i).CUSP + "','" + HCUSPCP1(j) + "','1','" + If(j = 0, "1", "3") + "');" + vbCrLf
+                    Next
+                Else
+                    HCUSPQueryCP1 = "INSERT INTO HEADLETTERS_ENGINE.DBO.HCUSP_CALC VALUES ('" + HCUSPList.Item(i).CUSPUSERID + "','" + HCUSPList.Item(i).CUSPHID + "','" + HCUSPList.Item(i).CUSP + "','" + HCUSPList.Item(i).CP1 + "','1','1');" + vbCrLf
+                End If
+                If HCUSPList.Item(i).CP2.Length > 2 Then
+                    Dim HCUSPCP2 = SplitInTwoChar(HCUSPList.Item(i).CP2)
+                    For j As Integer = 0 To HCUSPCP2.Count - 1
+                        HCUSPQueryCP2 = HCUSPQueryCP2 + "INSERT INTO HEADLETTERS_ENGINE.DBO.HCUSP_CALC VALUES ('" + HCUSPList.Item(i).CUSPUSERID + "','" + HCUSPList.Item(i).CUSPHID + "','" + HCUSPList.Item(i).CUSP + "','" + HCUSPCP2(j) + "','2','" + If(j = 0, "1", "3") + "');" + vbCrLf
+                    Next
+                Else
+                    HCUSPQueryCP2 = "INSERT INTO HEADLETTERS_ENGINE.DBO.HCUSP_CALC VALUES ('" + HCUSPList.Item(i).CUSPUSERID + "','" + HCUSPList.Item(i).CUSPHID + "','" + HCUSPList.Item(i).CUSP + "','" + HCUSPList.Item(i).CP2 + "','2','1');" + vbCrLf
+                End If
+                If HCUSPList.Item(i).CP3.Length > 2 Then
+                    Dim HCUSPCP3 = SplitInTwoChar(HCUSPList.Item(i).CP3)
+                    For j As Integer = 0 To HCUSPCP3.Count - 1
+                        HCUSPQueryCP3 = HCUSPQueryCP3 + "INSERT INTO HEADLETTERS_ENGINE.DBO.HCUSP_CALC VALUES ('" + HCUSPList.Item(i).CUSPUSERID + "','" + HCUSPList.Item(i).CUSPHID + "','" + HCUSPList.Item(i).CUSP + "','" + HCUSPCP3(j) + "','3','" + If(j = 0, "1", "3") + "');" + vbCrLf
+                    Next
+                Else
+                    HCUSPQueryCP3 = "INSERT INTO HEADLETTERS_ENGINE.DBO.HCUSP_CALC VALUES ('" + HCUSPList.Item(i).CUSPUSERID + "','" + HCUSPList.Item(i).CUSPHID + "','" + HCUSPList.Item(i).CUSP + "','" + HCUSPList.Item(i).CP3 + "','3','1');" + vbCrLf
+                End If
+                HCUSPQuery = HCUSPQuery + HCUSPQueryCP1 + HCUSPQueryCP2 + HCUSPQueryCP3
             Next
             Try
                 con.Open()
@@ -627,7 +334,16 @@ Module Promise_RAKE_Calc
         End If
         If HPLANETList.Count <> 0 Then
             For i As Integer = 0 To HPLANETList.Count - 1
-                HPLANETQuery = HPLANETQuery + $"INSERT INTO HEADLETTERS_ENGINE.DBO.HCUSP_CALC VALUES ('" + HPLANETList.Item(i).PLHUSERID + "','" + HPLANETList.Item(i).PLHID + "','" + HPLANETList.Item(i).HPHOUSE + "','" + HPLANETList.Item(i).PLANET + "','7','" + 2.ToString() + "');" + vbCrLf + ""
+                Dim MultiPlanetQuery = ""
+                If HPLANETList.Item(i).PLANET.Length > 2 Then
+                    Dim HPlanetArray = SplitInTwoChar(HPLANETList.Item(i).PLANET)
+                    For j As Integer = 0 To HPlanetArray.Count - 1
+                        MultiPlanetQuery = MultiPlanetQuery + "INSERT INTO HEADLETTERS_ENGINE.DBO.HCUSP_CALC VALUES ('" + HPLANETList.Item(i).PLHUSERID + "','" + HPLANETList.Item(i).PLHID + "','" + HPLANETList.Item(i).HPHOUSE + "','" + HPlanetArray(j) + "','7','" + If(j = 0, "2", "3") + "');" + vbCrLf
+                    Next
+                Else
+                    MultiPlanetQuery = "INSERT INTO HEADLETTERS_ENGINE.DBO.HCUSP_CALC VALUES ('" + HPLANETList.Item(i).PLHUSERID + "','" + HPLANETList.Item(i).PLHID + "','" + HPLANETList.Item(i).HPHOUSE + "','" + HPLANETList.Item(i).PLANET + "','7','2');" + vbCrLf
+                End If
+                HPLANETQuery = HPLANETQuery + MultiPlanetQuery
             Next
             Try
                 con.Open()
@@ -673,10 +389,12 @@ Module Promise_RAKE_Calc
                         HPROMSIE_CALCQuery = HPROMSIE_CALCQuery + "INSERT INTO HEADLETTERS_ENGINE.DBO.HPROMISE_CALC VALUES ('" + UID + "','" + HID + "','" + i.ToString("D2") + "','" + HCUSPCALCList.Item(j).CUSPPLANET + "','" + reader("CUSPID") + "','" + reader("CUSPPLANET") + "');" + vbCrLf
                     End While
                     con.Close()
-                    con.Open()
-                    cmd.CommandText = HPROMSIE_CALCQuery
-                    cmd.ExecuteNonQuery()
-                    con.Close()
+                    If HPROMSIE_CALCQuery <> "" Then
+                        con.Open()
+                        cmd.CommandText = HPROMSIE_CALCQuery
+                        cmd.ExecuteNonQuery()
+                        con.Close()
+                    End If
                 Next
             Next
         Catch ex As Exception
