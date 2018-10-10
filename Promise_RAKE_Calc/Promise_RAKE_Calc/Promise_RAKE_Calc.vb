@@ -1,11 +1,11 @@
 ﻿Imports System.Data.SqlClient
 
 Module Promise_RAKE_Calc
-    Dim connstr = "data source=49.50.103.132;initial catalog=HEADLETTERS10;integrated security=False;User Id=sa;password=pSI)TA1t0K[)"
-    'Dim connstr = "data source=WIN-KSTUPT6CJRC;initial catalog=HEADLETTERS_ENGINE;integrated security=True;multipleactiveresultsets=True;"
+    Public connstr = "data source=DESKTOP-JBRFH9E;initial catalog=HEADLETTERS_ENGINE;integrated security=True;"
+    'Public connstr = "data source=WIN-KSTUPT6CJRC;initial catalog=HEADLETTERS_ENGINE;integrated security=True;multipleactiveresultsets=True;"
+    'Public connstr = "data source=49.50.103.132;initial catalog=HEADLETTERS_ENGINE;integrated security=False;User Id=sa;password=pSI)TA1t0K[)"
+    'Public connstr = "data source=WIN-KSTUPT6CJRC;initial catalog=ASTROLOGYSOFTWARE_DB;integrated security=False;multipleactiveresultsets=True;User Id=sa;password=pSI)TA1t0K[);"
     Sub Main()
-        Delete_From_HCUSP_CALC("vcdubai@gmail.com", "3")
-        Delete_From_HPROMISE_CALC("vcdubai@gmail.com", "3")
         Dim HCUSPList As New List(Of HCUSP)
         Dim HRAKEList As New List(Of HRAKE)
         Dim HPLANETList As New List(Of HPLANET)
@@ -17,6 +17,7 @@ Module Promise_RAKE_Calc
         Conversion_of_HPLANET_RAKE("vcdubai@gmail.com", "3", HPLANETList, HRAKEList)
         Insert_Into_HCUSP_CALC("vcdubai@gmail.com", "3", HCUSPList, HPLANETList)
         Insert_Into_HPROMISE_CALC("vcdubai@gmail.com", "3")
+        Console.ReadKey()
     End Sub
     Function SplitInTwoChar(ByRef S1 As String) As String()
         Dim S1Split = New String(S1.Length / 2 + (If(S1.Length Mod 2 = 0, 0, 1)) - 1) {}
@@ -25,34 +26,6 @@ Module Promise_RAKE_Calc
         Next
         Return S1Split
     End Function
-    Sub Delete_From_HCUSP_CALC(ByVal UID As String, ByVal HID As String)
-        Dim con As New SqlConnection
-        Dim cmd As New SqlCommand
-        Try
-            con.ConnectionString = connstr
-            con.Open()
-            cmd.Connection = con
-            cmd.CommandText = "DELETE FROM HEADLETTERS_ENGINE.DBO.HCUSP_CALC WHERE CUSPUSERID = '" + UID + "' AND CUSPHID = '" + HID + "';"
-            cmd.ExecuteNonQuery()
-        Catch ex As Exception
-        Finally
-            con.Close()
-        End Try
-    End Sub
-    Sub Delete_From_HPROMISE_CALC(ByVal UID As String, ByVal HID As String)
-        Dim con As New SqlConnection
-        Dim cmd As New SqlCommand
-        Try
-            con.ConnectionString = connstr
-            con.Open()
-            cmd.Connection = con
-            cmd.CommandText = "DELETE FROM HEADLETTERS_ENGINE.DBO.HPROMISE_CALC WHERE HPCUSPID = '" + UID + "' AND HPHID = '" + HID + "';"
-            cmd.ExecuteNonQuery()
-        Catch ex As Exception
-        Finally
-            con.Close()
-        End Try
-    End Sub
     Sub Select_From_HRAKE(ByVal UID As String, ByVal HID As String, ByRef HRAKEList As List(Of HRAKE))
         Dim connection As SqlConnection = New SqlConnection(connstr)
         Dim query = $"SELECT * FROM HEADLETTERS_ENGINE.DBO.HRAKE WHERE UID = '" + UID + "' AND HID = '" + HID + "' AND HKEY = 'RA';
@@ -291,6 +264,15 @@ Module Promise_RAKE_Calc
         Dim HCUSPQuery = ""
         Dim HPLANETQuery = ""
         con.ConnectionString = connstr
+        Try
+            con.Open()
+            cmd.Connection = con
+            cmd.CommandText = "DELETE FROM HEADLETTERS_ENGINE.DBO.HCUSP_CALC WHERE CUSPUSERID = '" + UID + "' AND CUSPHID = '" + HID + "';"
+            cmd.ExecuteNonQuery()
+        Catch ex As Exception
+        Finally
+            con.Close()
+        End Try
         If HCUSPList.Count <> 0 Then
             For i As Integer = 0 To HCUSPList.Count - 1
                 Dim HCUSPQueryCP1 = ""
@@ -361,6 +343,12 @@ Module Promise_RAKE_Calc
         Dim cmd As New SqlCommand
         Dim reader As SqlDataReader
         Try
+            con.ConnectionString = connstr
+            con.Open()
+            cmd.Connection = con
+            cmd.CommandText = "DELETE FROM HEADLETTERS_ENGINE.DBO.HPROMISE_CALC WHERE HPCUSPID = '" + UID + "' AND HPHID = '" + HID + "';"
+            cmd.ExecuteNonQuery()
+            con.Close()
             con.ConnectionString = connstr
             cmd.Connection = con
             For i As Integer = 1 To 12
